@@ -1,0 +1,44 @@
+A loader is designed to load some kind of data (an object) from some source. The source could be disk, a database, a
+ContentProvider, the network, or another process. The loader will do the job of fetching the data without blocking the main
+thread and delivering the results to whomever is interested.
+There are three built-in types of loaders: Loader, AsyncTaskLoader, and CursorLoader (Figure 35.1). Loader is the base class, and
+not very useful on its own. It defines the API that the LoaderManager uses to communicate with all loaders.
+AsyncTaskLoader is an abstract Loader that uses an AsyncTask to move the work of loading data to another thread. Almost all
+useful loader classes you create will be a subclass of AsyncTaskLoader.
+Finally, CursorLoader extends AsyncTaskLoader to load a Cursor from a ContentProvider via the ContentResolver. Unfortunately
+for RunTracker, there is no way to use CursorLoader with cursors that come from a SQLiteDatabase.
+
+-------
+All communication with loaders is handled by the LoaderManager. This class is responsible for starting, stopping, and
+maintaining the lifecycle of any Loaders associated with your component. Within a Fragment or Activity, you can use the
+getLoaderManager() method to return an implementation to work with.
+Use the initLoader(int, Bundle, LoaderCallbacks<D>) method to trigger the initialization of a Loader. The first argument is an
+integer identifier for the loader, the second is a Bundle of arguments (which can be null), and the final argument is an
+implementation of the LoaderCallbacks<D> interface. As you will see in the following sections, there are multiple ways to
+implement LoaderCallbacks, but the most common is to have your Fragment implement it directly.
+
+You can use the restartLoader(int, Bundle, LoaderCallbacks<D>) method to force an existing loader to restart. This is
+commonly used to reload data that you know (or suspect) is stale.
+The LoaderCallbacks<D> interface has three methods: onCreateLoader(…), onLoadFinished(…) and onLoaderReset(…). You will look
+at each of these in more detail as you implement them in RunTracker.
+Why would you use a loader instead of, say, an AsyncTask directly? Well, the most compelling reason to do so is that the
+LoaderManager will keep your component’s loaders alive, along with their data, between configuration changes like rotation.
+If you use an AsyncTask to load data, you are responsible for managing its lifecycle during configuration changes and stashing
+its data somewhere that lives through them. Often, this is simplified by using setRetainInstance(true) on a Fragment and
+storing the data there, but there are still situations where you have to intervene and code you have to write in order to ensure
+that everything happens correctly.
+Loaders are designed to take some (but not all) of this pain off your hands. If, after a configuration change, you initialize a
+loader that has already finished loading its data, it can deliver that data immediately rather than trying to fetch it again. This
+works whether your fragment is retained or not, which can make your life easier since you don’t have to consider the
+lifecycle complications that retained fragments can introduce.
+-----
+The onCreateLoader(int, Bundle) method is called by the LoaderManager when it needs you to create the loader. The id
+argument is useful if you have more than one loader of the same type and you need to distinguish them, and the Bundle holds
+any arguments that were passed in. This implementation does not use either argument, and simply creates a new
+RunListCursorLoader pointing at the current Activity for context.
+The onLoadFinished(Loader<Cursor>, Cursor) method will be called on the main thread once the data has been loaded in the
+background. In this version, you reset the adapter on the ListView to a RunCursorAdapter pointing at the new cursor.
+Finally, the onLoaderReset(Loader<Cursor>) method will be called in the event that the data is no longer available. To be on the
+safe side, stop using the cursor by setting the list adapter to null.
+Now that you have support for the callbacks in place, you can tell the LoaderManager to do its thing. You can also remove the
+mCursor instance variable and the onDestroy() method that cleaned it up.
