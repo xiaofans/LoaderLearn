@@ -33,6 +33,7 @@ public class MyActivity extends ActionBarActivity  implements LoaderManager.Load
     private WordsManager wordsManager;
 
     private Button insertBtn;
+    private Button cploaderBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,15 @@ public class MyActivity extends ActionBarActivity  implements LoaderManager.Load
                 wordsManager.insertWords("目子子善");
             }
         });
+        cploaderBtn = (Button) findViewById(R.id.cp_and_cursor_query);
+        cploaderBtn.setOnClickListener(new View.OnClickListener(){
 
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MyActivity.this,MyActivity2.class);
+                startActivity(intent);
+            }
+        });
         getSupportLoaderManager().initLoader(2,null,this);
 
     }
@@ -100,7 +109,7 @@ public class MyActivity extends ActionBarActivity  implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        cursorAdapter = new WordsCursorAdapter(this,(DBHelper.WordsCursor)wordsManager.queryWords());
+        cursorAdapter = new WordsCursorAdapter(this,(DBHelper.WordsCursor)cursor);
          listView.setAdapter(cursorAdapter);
     }
 

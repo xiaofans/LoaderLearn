@@ -16,6 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MyActivity2" android:screenOrientation="portrait" android:label="Activity2"></activity>
+        <provider
+            android:authorities="xiaofan.loaderlearn"
+            android:name=".provider.WordsProvider">
+        </provider>
     </application>
 
 </manifest>

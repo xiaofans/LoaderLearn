@@ -1,0 +1,20 @@
+## this is from the book, hello android 3rd.
+
+Any piece of information managed by a ContentProvider is addressed
+through a URI that looks like this:
+content://authority/path/id
+where:
+• content:// is the standard required prefix.
+• authority is the name of the provider. Using your fully qualified
+package name is recommended to prevent name collisions.
+• path is a virtual directory within the provider that identifies the
+kind of data being requested.
+• id is the primary key of a specific record being requested. To
+request all records of a particular type, omit this and the trailing
+slash.
+Android comes with several providers already built in, including the
+following:3
+• content://browser
+• content://contacts
+• content://media
+• content://settings

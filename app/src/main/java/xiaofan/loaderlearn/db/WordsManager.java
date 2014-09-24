@@ -1,7 +1,6 @@
 package xiaofan.loaderlearn.db;
 
 import android.content.Context;
-
 /**
  * Created by zhaoyu on 2014/9/18.
  */
